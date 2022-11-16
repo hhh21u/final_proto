@@ -10,7 +10,7 @@ package main;
 // The greeting service definition.
 service Greeter {
   // Sends a greeting
-  rpc PrintGatech (PrintRequest) returns (PrintReply) {}
+  rpc UpdateMaster (PrintRequest) returns (PrintReply) {}
 }
 
 // The request message containing the user's name.
