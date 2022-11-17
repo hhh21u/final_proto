@@ -19,7 +19,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type GreeterClient interface {
 	// Sends a greeting
-	UpdateMaster(ctx context.Context, in *PrintRequest, opts ...grpc.CallOption) (*PrintReply, error)
+	UpdateMaster(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetReply, error)
 }
 
 type greeterClient struct {
@@ -30,8 +30,8 @@ func NewGreeterClient(cc grpc.ClientConnInterface) GreeterClient {
 	return &greeterClient{cc}
 }
 
-func (c *greeterClient) UpdateMaster(ctx context.Context, in *PrintRequest, opts ...grpc.CallOption) (*PrintReply, error) {
-	out := new(PrintReply)
+func (c *greeterClient) UpdateMaster(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetReply, error) {
+	out := new(GetReply)
 	err := c.cc.Invoke(ctx, "/main.Greeter/UpdateMaster", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -44,7 +44,7 @@ func (c *greeterClient) UpdateMaster(ctx context.Context, in *PrintRequest, opts
 // for forward compatibility
 type GreeterServer interface {
 	// Sends a greeting
-	UpdateMaster(context.Context, *PrintRequest) (*PrintReply, error)
+	UpdateMaster(context.Context, *GetRequest) (*GetReply, error)
 	mustEmbedUnimplementedGreeterServer()
 }
 
@@ -52,7 +52,7 @@ type GreeterServer interface {
 type UnimplementedGreeterServer struct {
 }
 
-func (UnimplementedGreeterServer) UpdateMaster(context.Context, *PrintRequest) (*PrintReply, error) {
+func (UnimplementedGreeterServer) UpdateMaster(context.Context, *GetRequest) (*GetReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateMaster not implemented")
 }
 func (UnimplementedGreeterServer) mustEmbedUnimplementedGreeterServer() {}
@@ -69,7 +69,7 @@ func RegisterGreeterServer(s grpc.ServiceRegistrar, srv GreeterServer) {
 }
 
 func _Greeter_UpdateMaster_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PrintRequest)
+	in := new(GetRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -81,7 +81,7 @@ func _Greeter_UpdateMaster_Handler(srv interface{}, ctx context.Context, dec fun
 		FullMethod: "/main.Greeter/UpdateMaster",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GreeterServer).UpdateMaster(ctx, req.(*PrintRequest))
+		return srv.(GreeterServer).UpdateMaster(ctx, req.(*GetRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
