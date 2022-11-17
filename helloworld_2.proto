@@ -10,16 +10,16 @@ package main;
 // The greeting service definition.
 service Greeter {
   // Sends a greeting
-  rpc UpdateMaster (PrintRequest) returns (PrintReply) {}
+  rpc UpdateMaster (GetRequest) returns (GetReply) {}
 }
 
 // The request message containing the user's name.
-message PrintRequest {
+message GetRequest {
   repeated bool map_finished = 1;
   map<string, bool> reduce_finished = 2;
 }
 
 // The response message containing the greetings
-message PrintReply {
+message GetReply {
   string message = 1;
 }
