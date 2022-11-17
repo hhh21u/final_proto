@@ -1,6 +1,6 @@
 // Starter Proto file, feel free to change name of the file
 syntax = "proto3";
-option go_package = "github.com/hhh21u/proj_proto";
+option go_package = "github.com/hhh21u/ws4_proto";
 // option java_multiple_files = true;
 // option java_package = "io.grpc.examples.helloworld";
 // option java_outer_classname = "HelloWorldProto";
@@ -10,7 +10,18 @@ package main;
 // The greeting service definition.
 service Greeter {
   // Sends a greeting
+  rpc PrintGatech (PrintRequest) returns (PrintReply) {}
   rpc UpdateMaster (GetRequest) returns (GetReply) {}
+}
+
+// The request message containing the user's name.
+message PrintRequest {
+  string input = 1;
+}
+
+// The response message containing the greetings
+message PrintReply {
+  string message = 1;
 }
 
 // The request message containing the user's name.
