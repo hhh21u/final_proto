@@ -21,6 +21,7 @@ type GreeterClient interface {
 	// Sends a greeting
 	PrintGatech(ctx context.Context, in *PrintRequest, opts ...grpc.CallOption) (*PrintReply, error)
 	UpdateMaster(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetReply, error)
+	ReplyFromWorker(ctx context.Context, in *PrintRequest, opts ...grpc.CallOption) (*PrintReply, error)
 }
 
 type greeterClient struct {
@@ -49,6 +50,15 @@ func (c *greeterClient) UpdateMaster(ctx context.Context, in *GetRequest, opts .
 	return out, nil
 }
 
+func (c *greeterClient) ReplyFromWorker(ctx context.Context, in *PrintRequest, opts ...grpc.CallOption) (*PrintReply, error) {
+	out := new(PrintReply)
+	err := c.cc.Invoke(ctx, "/main.Greeter/ReplyFromWorker", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // GreeterServer is the server API for Greeter service.
 // All implementations must embed UnimplementedGreeterServer
 // for forward compatibility
@@ -56,6 +66,7 @@ type GreeterServer interface {
 	// Sends a greeting
 	PrintGatech(context.Context, *PrintRequest) (*PrintReply, error)
 	UpdateMaster(context.Context, *GetRequest) (*GetReply, error)
+	ReplyFromWorker(context.Context, *PrintRequest) (*PrintReply, error)
 	mustEmbedUnimplementedGreeterServer()
 }
 
@@ -68,6 +79,9 @@ func (UnimplementedGreeterServer) PrintGatech(context.Context, *PrintRequest) (*
 }
 func (UnimplementedGreeterServer) UpdateMaster(context.Context, *GetRequest) (*GetReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateMaster not implemented")
+}
+func (UnimplementedGreeterServer) ReplyFromWorker(context.Context, *PrintRequest) (*PrintReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReplyFromWorker not implemented")
 }
 func (UnimplementedGreeterServer) mustEmbedUnimplementedGreeterServer() {}
 
@@ -118,6 +132,24 @@ func _Greeter_UpdateMaster_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Greeter_ReplyFromWorker_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PrintRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GreeterServer).ReplyFromWorker(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/main.Greeter/ReplyFromWorker",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GreeterServer).ReplyFromWorker(ctx, req.(*PrintRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Greeter_ServiceDesc is the grpc.ServiceDesc for Greeter service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -132,6 +164,10 @@ var Greeter_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateMaster",
 			Handler:    _Greeter_UpdateMaster_Handler,
+		},
+		{
+			MethodName: "ReplyFromWorker",
+			Handler:    _Greeter_ReplyFromWorker_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
